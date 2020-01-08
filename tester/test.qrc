@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource>
+      <file>play.ico</file>
+      <file>pause.ico</file>
+      <file>stop.ico</file>
+  </qresource>
+  </RCC>
