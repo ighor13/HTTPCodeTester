@@ -321,7 +321,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         nodes = root.getElementsByTagName(HtmlTag::META);
         for (const auto& node: nodes)
         {
-//            qDebug() << "META: " << node.getAttribute("name");
+            qDebug() << "META: " << node.getAttribute("name");
             if(node.getAttribute("name").toLower()==QString("description"))
             {
                 item = new QTableWidgetItem(QString(node.getAttribute("content")).trimmed());
