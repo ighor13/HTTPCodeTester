@@ -369,6 +369,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     {
         auto doc = QGumboDocument::parse(body);
         auto root = doc.rootNode();
+/*
         auto nodes = root.getElementsByTagName(HtmlTag::TITLE);
         Q_ASSERT(nodes.size() == 1);
 
@@ -379,13 +380,28 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
             item = new QTableWidgetItem(QString(title.innerText().trimmed()));
             model->setItem(id, 4, item);
         }
+*/
+        unsigned titlecount=0;
+        auto nodes = root.getElementsByTagName(HtmlTag::TITLE);
+        for (const auto& node: nodes)
+        {
+//        qDebug() << "title: " << node.innerText();
+            item = new QTableWidgetItem(QString(node.innerText().simplified()));
+            model->setItem(id, 4, item);
+            titlecount++;
+        }
+        if(titlecount>1)
+        {
+            item = new QTableWidgetItem(QString("MORE THAN ONE!"));
+            model->setItem(id, 4, item);
+        }
 
         unsigned h1count=0;
         nodes = root.getElementsByTagName(HtmlTag::H1);
         for (const auto& node: nodes)
         {
 //        qDebug() << "h1: " << node.innerText();
-            item = new QTableWidgetItem(QString(node.innerText().trimmed()));
+            item = new QTableWidgetItem(QString(node.innerText().simplified()));
             model->setItem(id, 5, item);
             h1count++;
         }
@@ -401,12 +417,12 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
 //            qDebug() << "META: " << node.getAttribute("name");
             if(node.getAttribute("name").toLower()==QString("description"))
             {
-                item = new QTableWidgetItem(QString(node.getAttribute("content")).trimmed());
+                item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
                 model->setItem(id, 6, item);
             }
             if(node.getAttribute("name").toLower()==QString("keywords"))
             {
-                item = new QTableWidgetItem(QString(node.getAttribute("content")).trimmed());
+                item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
                 model->setItem(id, 7, item);
             }
         }
