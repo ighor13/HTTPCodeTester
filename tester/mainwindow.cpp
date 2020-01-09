@@ -209,6 +209,53 @@ void MainWindow::on_actionLoad_From_File_triggered()
     mutex.unlock();
 }
 
+void MainWindow::on_actionLoad_from_X_ML_triggered()
+{
+    mutex.lock();
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Load From File"),"","XML Files (*.xml)");
+    unsigned long count=0;
+    qDebug()<<fileName;
+    if (fileName.length()!=0)
+    {
+        QFile file(fileName);
+        QDomDocument doc;
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            QMessageBox::critical(nullptr,qApp->tr("Ошибка!"),
+            qApp->tr("\nНевозможно открыть файл.")+
+            qApp->tr("\nНажмите Cancel"), QMessageBox::Cancel);
+        }
+        else if (!doc.setContent(&file))
+        {
+            QMessageBox::critical(nullptr,qApp->tr("Ошибка!"),
+            qApp->tr("\nНевозможно считать данные из файла.")+
+            qApp->tr("\nНажмите Cancel"), QMessageBox::Cancel);
+            file.close();
+            return;
+        }
+        else
+        {
+
+            QDomElement docElem = doc.documentElement();
+
+            QDomNode n = docElem.firstChild();
+            while(!n.isNull())
+            {
+                count++;
+                QDomElement e = n.toElement(); // try to convert the node to an element.
+                if(!e.isNull()) {
+                    qDebug() << qPrintable(e.text()) << endl; // the node really is an element.
+                }
+                n = n.nextSibling();
+            }            ///
+            file.close();
+        }
+    }
+    ui->statusbar->showMessage("Loaded from XML file "+fileName+", "+QString::number(count)+" url(s)",3000);
+    mutex.unlock();
+
+}
+
 void MainWindow::on_actionClea_r_All_triggered()
 {
     mutex.lock();
@@ -392,3 +439,5 @@ void MainWindow::on_startButton_clicked()
     mutex.unlock();
 
 }
+
+

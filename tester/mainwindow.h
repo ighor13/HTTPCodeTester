@@ -12,6 +12,7 @@
 #include <QGuiApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QDomDocument>
 #include <fstream>
 #include <sstream>
 #include <qgumbodocument.h>
@@ -55,6 +56,8 @@ private slots:
     void updateurl(const int);
 
     void on_actionCopy_To_Clipboard_triggered();
+
+    void on_actionLoad_from_X_ML_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -114,6 +114,7 @@
     <addaction name="actionClea_r_All"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_From_File"/>
+    <addaction name="actionLoad_from_X_ML"/>
     <addaction name="actionSave_To_File"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_From_Clipboard"/>
@@ -185,6 +186,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+X</string>
+   </property>
+  </action>
+  <action name="actionLoad_from_X_ML">
+   <property name="text">
+    <string>Load from X&amp;ML...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
    </property>
   </action>
  </widget>
