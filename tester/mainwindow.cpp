@@ -238,16 +238,46 @@ void MainWindow::on_actionLoad_from_X_ML_triggered()
 
             QDomElement docElem = doc.documentElement();
 
-            QDomNode n = docElem.firstChild();
-            while(!n.isNull())
+/*
+            int row = ui->tableWidget->rowCount();
+            ui->tableWidget->insertRow(row);
+            QTableWidgetItem *item = new QTableWidgetItem(.........);
+            ui->tableWidget->setItem(row, 0, item);
+*/
+
+            QDomElement root = doc.documentElement();
+            if (root.tagName() != "urlset")
             {
-                count++;
-                QDomElement e = n.toElement(); // try to convert the node to an element.
-                if(!e.isNull()) {
-                    qDebug() << qPrintable(e.text()) << endl; // the node really is an element.
-                }
-                n = n.nextSibling();
-            }            ///
+              qWarning("The file is not a bookindex file");
+              qDebug()<<("The file is not a bookindex file");
+              return;
+            }
+
+            QDomNode node = root.firstChild();
+            while (!node.isNull())
+            {
+              if (node.toElement().tagName() == "url")
+              {
+                 QDomNode uri = node.firstChild();
+                 while (!uri.isNull())
+                 {
+//                     qDebug()<<uri.toElement().tagName();
+                     if (uri.toElement().tagName() == "loc")
+                     {
+//                        qDebug()<<uri.toElement().text();
+                        count++;
+                        int row = ui->tableWidget->rowCount();
+                        ui->tableWidget->insertRow(row);
+                        QTableWidgetItem *item = new QTableWidgetItem(uri.toElement().text());
+                        ui->tableWidget->setItem(row, 0, item);
+                     }
+                     uri = uri.nextSibling();
+                 }
+
+              }
+              node = node.nextSibling();
+            }
+
             file.close();
         }
     }
