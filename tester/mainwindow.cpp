@@ -482,6 +482,7 @@ void MainWindow::on_startButton_clicked()
     }
     mutex.lock();
     ui->progressBar->setValue(ui->tableWidget->rowCount());
+    ui->statusbar->showMessage("All requests sent...",5000);
     mutex.unlock();
 
 }
