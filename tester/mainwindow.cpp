@@ -494,3 +494,8 @@ void MainWindow::on_startButton_clicked()
 }
 
 
+
+void MainWindow::on_actionLoad_from_Sitemap_URL_triggered()
+{
+    //...
+}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1156</width>
-    <height>522</height>
+    <width>753</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="cursor">
@@ -103,7 +103,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1156</width>
+     <width>753</width>
      <height>21</height>
     </rect>
    </property>
@@ -115,6 +115,7 @@
     <addaction name="separator"/>
     <addaction name="actionLoad_From_File"/>
     <addaction name="actionLoad_from_X_ML"/>
+    <addaction name="actionLoad_from_Sitemap_URL"/>
     <addaction name="actionSave_To_File"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_From_Clipboard"/>
@@ -128,7 +129,16 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuAction">
+    <property name="title">
+     <string>Action</string>
+    </property>
+    <addaction name="actionStart"/>
+    <addaction name="actionPause"/>
+    <addaction name="actionStop"/>
+   </widget>
    <addaction name="menuPush_me_too"/>
+   <addaction name="menuAction"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -196,9 +206,102 @@
     <string>Ctrl+X</string>
    </property>
   </action>
+  <action name="actionLoad_from_Sitemap_URL">
+   <property name="text">
+    <string>Load from Sitemap &amp;URL...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionStart">
+   <property name="icon">
+    <iconset resource="test.qrc">
+     <normaloff>:/play.ico</normaloff>:/play.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Start</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="icon">
+    <iconset resource="test.qrc">
+     <normaloff>:/pause.ico</normaloff>:/pause.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset resource="test.qrc">
+     <normaloff>:/stop.ico</normaloff>:/stop.ico</iconset>
+   </property>
+   <property name="text">
+    <string>S&amp;top</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="test.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionStart</sender>
+   <signal>triggered()</signal>
+   <receiver>startButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>520</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPause</sender>
+   <signal>triggered()</signal>
+   <receiver>pauseButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>606</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionStop</sender>
+   <signal>triggered()</signal>
+   <receiver>stopButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>692</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

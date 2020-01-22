@@ -33,7 +33,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    unsigned MainWindow::Load(QDomDocument&); // returns count of loaded strings
 
 private slots:
     void on_actionAbout_triggered();
@@ -60,11 +59,14 @@ private slots:
 
     void on_actionLoad_from_X_ML_triggered();
 
+    void on_actionLoad_from_Sitemap_URL_triggered();
+
 private:
     Ui::MainWindow *ui;
     QMutex mutex;
     bool stop;
     bool pause;
+    unsigned MainWindow::Load(QDomDocument&); // returns count of loaded strings
 
 };
 
