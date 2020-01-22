@@ -325,8 +325,9 @@ void MainWindow::gotXML(QNetworkReply* reply)
         if (root.tagName() == "urlset")
         {
               count=Load(doc);
+              qDebug()<<"Loaded "<<reply->url().toDisplayString()<<count<<" pcs";
               mutex.lock();
-              ui->statusbar->showMessage("Loaded from remote sitemap "+QString::number(count)+" url(s)",3000);
+              ui->statusbar->showMessage(QString("Loaded from remote sitemap ")+reply->url().toDisplayString()+" "+QString::number(count)+" url(s)",3000);
               mutex.unlock();
         }
         else
@@ -337,7 +338,7 @@ void MainWindow::gotXML(QNetworkReply* reply)
             {
               if (node.toElement().tagName() == "sitemap")
               {
-//                    qDebug()<<node.toElement().text();
+                  qDebug()<<"Loading from: "<<node.toElement().text();
                   mutex.lock();
                   ui->statusbar->showMessage("Loading from remote sitemap "+node.toElement().text(),3000);
                   mutex.unlock();
