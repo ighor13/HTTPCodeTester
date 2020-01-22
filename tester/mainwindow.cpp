@@ -209,11 +209,59 @@ void MainWindow::on_actionLoad_From_File_triggered()
     mutex.unlock();
 }
 
+unsigned MainWindow::Load(QDomDocument& doc)
+{
+    QDomElement docElem = doc.documentElement();
+
+    unsigned long count=0;
+
+/*
+    int row = ui->tableWidget->rowCount();
+    ui->tableWidget->insertRow(row);
+    QTableWidgetItem *item = new QTableWidgetItem(.........);
+    ui->tableWidget->setItem(row, 0, item);
+*/
+
+    QDomElement root = doc.documentElement();
+    if (root.tagName() != "urlset")
+    {
+      qWarning("The file is not a bookindex file");
+      qDebug()<<("The file is not a bookindex file");
+      return 0;
+    }
+
+    QDomNode node = root.firstChild();
+    while (!node.isNull())
+    {
+      if (node.toElement().tagName() == "url")
+      {
+         QDomNode uri = node.firstChild();
+         while (!uri.isNull())
+         {
+//                     qDebug()<<uri.toElement().tagName();
+             if (uri.toElement().tagName() == "loc")
+             {
+//                        qDebug()<<uri.toElement().text();
+                count++;
+                int row = ui->tableWidget->rowCount();
+                ui->tableWidget->insertRow(row);
+                QTableWidgetItem *item = new QTableWidgetItem(uri.toElement().text());
+                ui->tableWidget->setItem(row, 0, item);
+             }
+             uri = uri.nextSibling();
+         }
+
+      }
+      node = node.nextSibling();
+    }
+    return count;
+}
+
 void MainWindow::on_actionLoad_from_X_ML_triggered()
 {
+    unsigned count=0;
     mutex.lock();
     QString fileName = QFileDialog::getOpenFileName(this,tr("Load From File"),"","XML Files (*.xml)");
-    unsigned long count=0;
     qDebug()<<fileName;
     if (fileName.length()!=0)
     {
@@ -235,49 +283,7 @@ void MainWindow::on_actionLoad_from_X_ML_triggered()
         }
         else
         {
-
-            QDomElement docElem = doc.documentElement();
-
-/*
-            int row = ui->tableWidget->rowCount();
-            ui->tableWidget->insertRow(row);
-            QTableWidgetItem *item = new QTableWidgetItem(.........);
-            ui->tableWidget->setItem(row, 0, item);
-*/
-
-            QDomElement root = doc.documentElement();
-            if (root.tagName() != "urlset")
-            {
-              qWarning("The file is not a bookindex file");
-              qDebug()<<("The file is not a bookindex file");
-              return;
-            }
-
-            QDomNode node = root.firstChild();
-            while (!node.isNull())
-            {
-              if (node.toElement().tagName() == "url")
-              {
-                 QDomNode uri = node.firstChild();
-                 while (!uri.isNull())
-                 {
-//                     qDebug()<<uri.toElement().tagName();
-                     if (uri.toElement().tagName() == "loc")
-                     {
-//                        qDebug()<<uri.toElement().text();
-                        count++;
-                        int row = ui->tableWidget->rowCount();
-                        ui->tableWidget->insertRow(row);
-                        QTableWidgetItem *item = new QTableWidgetItem(uri.toElement().text());
-                        ui->tableWidget->setItem(row, 0, item);
-                     }
-                     uri = uri.nextSibling();
-                 }
-
-              }
-              node = node.nextSibling();
-            }
-
+            count=Load(doc);
             file.close();
         }
     }

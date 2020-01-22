@@ -33,6 +33,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    unsigned MainWindow::Load(QDomDocument&); // returns count of loaded strings
 
 private slots:
     void on_actionAbout_triggered();
