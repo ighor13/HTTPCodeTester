@@ -292,6 +292,49 @@ void MainWindow::on_actionLoad_from_X_ML_triggered()
 
 }
 
+void MainWindow::on_actionLoad_from_Sitemap_URL_triggered()
+{
+    mutex.lock();
+    bool ok;
+    QString url = QInputDialog::getText(this, tr("URL"),
+                                          tr("Sitemap URL:"), QLineEdit::Normal,
+                                          "https://", &ok);
+    mutex.unlock();
+    if (!(ok && !url.isEmpty()))
+        return;
+
+    xmlmanager.get(QNetworkRequest((QUrl(url))));
+    connect(&xmlmanager,SIGNAL(finished(QNetworkReply*)),this,SLOT(gotXML(QNetworkReply*)));
+
+}
+
+void MainWindow::gotXML(QNetworkReply* reply)
+{
+    QByteArray body = reply->readAll();
+    QList<QNetworkReply::RawHeaderPair>  headers = reply->rawHeaderPairs();
+    int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
+    mutex.lock();
+    unsigned count=0;
+    if(httpStatus==200)
+    {
+        QDomDocument doc;
+        doc.setContent(body);
+        count=Load(doc);
+        ui->statusbar->showMessage("Loaded from remote sitemap "+QString::number(count)+" url(s)",3000);
+
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.critical(this, "Error", "Requested URL is not accessible");
+    }
+    mutex.unlock();
+
+
+}
+
+
 void MainWindow::on_actionClea_r_All_triggered()
 {
     mutex.lock();
@@ -495,7 +538,3 @@ void MainWindow::on_startButton_clicked()
 
 
 
-void MainWindow::on_actionLoad_from_Sitemap_URL_triggered()
-{
-    //...
-}

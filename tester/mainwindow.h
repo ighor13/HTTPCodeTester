@@ -5,6 +5,8 @@
 #include <QMessageBox>
 #include <QClipboard>
 #include <QFileDialog>
+#include <QInputDialog>
+#include <QTextCodec>
 #include <QThread>
 #include <QMutex>
 #include <QDebug>
@@ -36,29 +38,17 @@ public:
 
 private slots:
     void on_actionAbout_triggered();
-
     void on_actionSave_To_File_triggered();
-
     void on_actionLoad_From_Clipboard_triggered();
-
     void on_startButton_clicked();
-
     void on_pauseButton_clicked();
-
     void on_stopButton_clicked();
-
     void on_actionLoad_From_File_triggered();
-
     void on_actionClea_r_All_triggered();
-
     void on_actionE_xit_triggered();
-
     void updateurl(const int);
-
     void on_actionCopy_To_Clipboard_triggered();
-
     void on_actionLoad_from_X_ML_triggered();
-
     void on_actionLoad_from_Sitemap_URL_triggered();
 
 private:
@@ -66,7 +56,10 @@ private:
     QMutex mutex;
     bool stop;
     bool pause;
+    QNetworkAccessManager xmlmanager;
     unsigned MainWindow::Load(QDomDocument&); // returns count of loaded strings
+private slots:
+    void gotXML(QNetworkReply* );
 
 };
 
