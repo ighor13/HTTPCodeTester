@@ -311,25 +311,51 @@ void MainWindow::on_actionLoad_from_Sitemap_URL_triggered()
 void MainWindow::gotXML(QNetworkReply* reply)
 {
     QByteArray body = reply->readAll();
-    QList<QNetworkReply::RawHeaderPair>  headers = reply->rawHeaderPairs();
+    QList<QNetworkReply::RawHeaderPair> headers = reply->rawHeaderPairs();
     int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
-    mutex.lock();
+
     unsigned count=0;
     if(httpStatus==200)
     {
         QDomDocument doc;
         doc.setContent(body);
-        count=Load(doc);
-        ui->statusbar->showMessage("Loaded from remote sitemap "+QString::number(count)+" url(s)",3000);
+
+        QDomElement root = doc.documentElement();
+        if (root.tagName() == "urlset")
+        {
+              count=Load(doc);
+              mutex.lock();
+              ui->statusbar->showMessage("Loaded from remote sitemap "+QString::number(count)+" url(s)",3000);
+              mutex.unlock();
+        }
+        else
+        if (root.tagName() == "sitemapindex")
+        {
+            QDomNode node = root.firstChild();
+            while (!node.isNull())
+            {
+              if (node.toElement().tagName() == "sitemap")
+              {
+//                    qDebug()<<node.toElement().text();
+                  mutex.lock();
+                  ui->statusbar->showMessage("Loading from remote sitemap "+node.toElement().text(),3000);
+                  mutex.unlock();
+                  xmlmanager.get(QNetworkRequest((QUrl(node.toElement().text()))));
+                  connect(&xmlmanager,SIGNAL(finished(QNetworkReply*)),this,SLOT(gotXML(QNetworkReply*)));
+              }
+              node = node.nextSibling();
+            }
+        }
 
     }
     else
     {
+        mutex.lock();
         QMessageBox msgBox;
         msgBox.critical(this, "Error", "Requested URL is not accessible");
+        mutex.unlock();
     }
-    mutex.unlock();
 
 
 }
