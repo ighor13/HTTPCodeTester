@@ -57,7 +57,7 @@ private:
     bool stop;
     bool pause;
     QNetworkAccessManager xmlmanager;
-    unsigned MainWindow::Load(QDomDocument&); // returns count of loaded strings
+    unsigned Load(QDomDocument&); // returns count of loaded strings
 private slots:
     void gotXML(QNetworkReply* );
 
