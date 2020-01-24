@@ -15,22 +15,28 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->insertColumn(5);
     ui->tableWidget->insertColumn(6);
     ui->tableWidget->insertColumn(7);
+    ui->tableWidget->insertColumn(8);
+    ui->tableWidget->insertColumn(9);
     ui->tableWidget->setColumnWidth(0, 500);
     ui->tableWidget->setColumnWidth(1, 150);
-    ui->tableWidget->setColumnWidth(2, 100);
-    ui->tableWidget->setColumnWidth(3, 500);
-    ui->tableWidget->setColumnWidth(4, 500);
+    ui->tableWidget->setColumnWidth(2, 150);
+    ui->tableWidget->setColumnWidth(3, 150);
+    ui->tableWidget->setColumnWidth(4, 100);
     ui->tableWidget->setColumnWidth(5, 500);
     ui->tableWidget->setColumnWidth(6, 500);
     ui->tableWidget->setColumnWidth(7, 500);
+    ui->tableWidget->setColumnWidth(8, 500);
+    ui->tableWidget->setColumnWidth(9, 500);
     ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("URL"));
     ui->tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Resp. Time, ms."));
-    ui->tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("HTTP Code"));
-    ui->tableWidget->setHorizontalHeaderItem(3, new QTableWidgetItem("Redirect Target"));
-    ui->tableWidget->setHorizontalHeaderItem(4, new QTableWidgetItem("<title>"));
-    ui->tableWidget->setHorizontalHeaderItem(5, new QTableWidgetItem("<h1>"));
-    ui->tableWidget->setHorizontalHeaderItem(6, new QTableWidgetItem("meta description"));
-    ui->tableWidget->setHorizontalHeaderItem(7, new QTableWidgetItem("meta keywords"));
+    ui->tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Size"));
+    ui->tableWidget->setHorizontalHeaderItem(3, new QTableWidgetItem("Encoding"));
+    ui->tableWidget->setHorizontalHeaderItem(4, new QTableWidgetItem("HTTP Code"));
+    ui->tableWidget->setHorizontalHeaderItem(5, new QTableWidgetItem("Redirect Target"));
+    ui->tableWidget->setHorizontalHeaderItem(6, new QTableWidgetItem("<title>"));
+    ui->tableWidget->setHorizontalHeaderItem(7, new QTableWidgetItem("<h1>"));
+    ui->tableWidget->setHorizontalHeaderItem(8, new QTableWidgetItem("meta description"));
+    ui->tableWidget->setHorizontalHeaderItem(9, new QTableWidgetItem("meta keywords"));
 
 }
 
@@ -78,7 +84,7 @@ void MainWindow::on_actionSave_To_File_triggered()
         else
         {
             QTextStream out(&file);
-            out<<"URL\tResp. Time, ms.\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\n";
+            out<<"URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\n";
             for(int i=0;i<ui->tableWidget->rowCount();i++)
             {
                 if(ui->tableWidget->item(i,0)) // QTableWidgetItem
@@ -413,7 +419,10 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     QList<QNetworkReply::RawHeaderPair>  headers = reply->rawHeaderPairs();
     int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
-//    qDebug()<<headers;
+    QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
+//    encoding=encoding.remove("text/html; charset=");
+    encoding=encoding.section("charset=",-1,-1).toUpper();
+//    qDebug()<<encoding;
 //    qDebug()<<body;
 
 //        emit status("url: "+index0.data().toString(),idforstatus);
@@ -424,26 +433,39 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
        item = new QTableWidgetItem(QString::number(timer.elapsed()));
        model->setItem(id, 1, item);
     }
+    if(body.size())
+    {
+        item = new QTableWidgetItem(QString::number(body.size()));
+        model->setItem(id, 2, item);
+
+    }
+    if(encoding!="")
+    {
+        item = new QTableWidgetItem(QString(encoding));
+        model->setItem(id, 3, item);
+
+    }
     if(httpStatus)
     {
         item = new QTableWidgetItem(QString::number(httpStatus));
-        model->setItem(id, 2, item);
+        model->setItem(id, 4, item);
     }
     else
     {
         item = new QTableWidgetItem(QString("ERROR"));
-        model->setItem(id, 2, item);
+        model->setItem(id, 4, item);
     }
 
     if(httpStatus>=300&&httpStatus<310)
     {
        item = new QTableWidgetItem(QString(reply->rawHeader("Location")));
-       model->setItem(id, 3, item);
+       model->setItem(id, 5, item);
     }
 
     if(httpStatus==200)
     {
-        auto doc = QGumboDocument::parse(body);
+        QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
+        auto doc = QGumboDocument::parse(codec->toUnicode(body));
         auto root = doc.rootNode();
 /*
         auto nodes = root.getElementsByTagName(HtmlTag::TITLE);
@@ -463,13 +485,13 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         {
 //        qDebug() << "title: " << node.innerText();
             item = new QTableWidgetItem(QString(node.innerText().simplified()));
-            model->setItem(id, 4, item);
+            model->setItem(id, 6, item);
             titlecount++;
         }
         if(titlecount>1)
         {
             item = new QTableWidgetItem(QString("MORE THAN ONE!"));
-            model->setItem(id, 4, item);
+            model->setItem(id, 6, item);
         }
 
         unsigned h1count=0;
@@ -478,13 +500,13 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         {
 //        qDebug() << "h1: " << node.innerText();
             item = new QTableWidgetItem(QString(node.innerText().simplified()));
-            model->setItem(id, 5, item);
+            model->setItem(id, 7, item);
             h1count++;
         }
         if(h1count>1)
         {
             item = new QTableWidgetItem(QString("MORE THAN ONE!"));
-            model->setItem(id, 5, item);
+            model->setItem(id, 7, item);
         }
 
         nodes = root.getElementsByTagName(HtmlTag::META);
@@ -494,12 +516,12 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
             if(node.getAttribute("name").toLower()==QString("description"))
             {
                 item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
-                model->setItem(id, 6, item);
+                model->setItem(id, 8, item);
             }
             if(node.getAttribute("name").toLower()==QString("keywords"))
             {
                 item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
-                model->setItem(id, 7, item);
+                model->setItem(id, 9, item);
             }
         }
 
