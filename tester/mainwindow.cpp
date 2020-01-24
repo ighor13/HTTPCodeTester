@@ -108,7 +108,7 @@ void MainWindow::on_actionCopy_To_Clipboard_triggered()
     mutex.lock();
     QString text;
 
-    text+="URL\tResp. Time, ms.\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\n";
+    text+="URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\n";
 
     for(int i=0;i<ui->tableWidget->rowCount();i++)
     {
