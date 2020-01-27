@@ -339,16 +339,17 @@ void MainWindow::gotXML(QNetworkReply* reply)
         else
         if (root.tagName() == "sitemapindex")
         {
+            qDebug()<<"sitemapindex";
             QDomNode node = root.firstChild();
             while (!node.isNull())
             {
               if (node.toElement().tagName() == "sitemap")
               {
-                  qDebug()<<"Loading from: "<<node.toElement().text();
+                  qDebug()<<"Loading from: "<<node.toElement().elementsByTagName("loc").at(0).toElement().text();
                   mutex.lock();
                   ui->statusbar->showMessage("Loading from remote sitemap "+node.toElement().text(),3000);
                   mutex.unlock();
-                  xmlmanager.get(QNetworkRequest((QUrl(node.toElement().text()))));
+                  xmlmanager.get(QNetworkRequest((QUrl(node.toElement().elementsByTagName("loc").at(0).toElement().text()))));
                   connect(&xmlmanager,SIGNAL(finished(QNetworkReply*)),this,SLOT(gotXML(QNetworkReply*)));
               }
               node = node.nextSibling();
