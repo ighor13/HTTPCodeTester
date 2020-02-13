@@ -20,7 +20,7 @@
 #include <qgumbodocument.h>
 #include <qgumbonode.h>
 
-#define HTTP_MAX_THREADS 3
+#define HTTP_MAX_THREADS 5
 
 
 
