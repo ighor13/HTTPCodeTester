@@ -497,12 +497,24 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
 
         unsigned h1count=0;
         nodes = root.getElementsByTagName(HtmlTag::H1);
+
         for (const auto& node: nodes)
         {
 //        qDebug() << "h1: " << node.innerText();
-            item = new QTableWidgetItem(QString(node.innerText().simplified()));
-            model->setItem(id, 7, item);
-            h1count++;
+            if(node.childElementCount())
+            {
+//                qDebug()<<"Complex h1";
+                for (const auto& child: node.childNodes())
+                    item = new QTableWidgetItem(QString(child.innerText().simplified()));
+                    model->setItem(id, 7, item);
+                    h1count++;
+            }
+            else
+            {
+                item = new QTableWidgetItem(QString(node.innerText().simplified()));
+                model->setItem(id, 7, item);
+                h1count++;
+            }
         }
         if(h1count>1)
         {

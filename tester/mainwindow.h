@@ -20,8 +20,7 @@
 #include <qgumbodocument.h>
 #include <qgumbonode.h>
 
-#define HTTP_MAX_THREADS 5
-
+#define HTTP_MAX_THREADS 3
 
 
 QT_BEGIN_NAMESPACE
