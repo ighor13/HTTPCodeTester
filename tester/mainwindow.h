@@ -19,6 +19,7 @@
 #include <sstream>
 #include <qgumbodocument.h>
 #include <qgumbonode.h>
+#include <grabber.h>
 
 #define HTTP_MAX_THREADS 3
 
@@ -34,6 +35,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    int addItems(QStringList list);
+
 
 private slots:
     void on_actionAbout_triggered();
@@ -60,6 +63,7 @@ private:
 private slots:
     void gotXML(QNetworkReply* );
 
+    void on_action_Grab_from_site_triggered();
 };
 
 class QWaitCursor

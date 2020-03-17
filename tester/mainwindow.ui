@@ -116,6 +116,7 @@
     <addaction name="actionLoad_From_File"/>
     <addaction name="actionLoad_from_X_ML"/>
     <addaction name="actionLoad_from_Sitemap_URL"/>
+    <addaction name="action_Grab_from_site"/>
     <addaction name="actionSave_To_File"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_From_Clipboard"/>
@@ -248,6 +249,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="action_Grab_from_site">
+   <property name="text">
+    <string>Gra&amp;b from site</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
  </widget>

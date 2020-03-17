@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.3a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.4a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 
@@ -598,5 +598,29 @@ void MainWindow::on_startButton_clicked()
 
 }
 
+int MainWindow::addItems(QStringList list)
+{
+    unsigned count=0;
+    for( auto q : list )
+    {
+        count++;
+        int row = ui->tableWidget->rowCount();
+        ui->tableWidget->insertRow(row);
+        QTableWidgetItem *item = new QTableWidgetItem(q);
+        ui->tableWidget->setItem(row, 0, item);
+    }
+    if(count)
+        ui->statusbar->showMessage("Added from grabber "+QString::number(count)+" url(s)",3000);
+    else
+        ui->statusbar->showMessage("Cancelled",3000);
 
+    return count;
+}
 
+void MainWindow::on_action_Grab_from_site_triggered()
+{
+    Grabber grabber;
+    grabber.setModal(true);
+    grabber.exec();
+    addItems(grabber.result);
+}
