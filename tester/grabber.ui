@@ -51,7 +51,7 @@
         <item>
          <widget class="QLineEdit" name="lineEdit">
           <property name="text">
-           <string>https://</string>
+           <string>https://www.vitareklama.ru/soft/httpcodetester</string>
           </property>
          </widget>
         </item>

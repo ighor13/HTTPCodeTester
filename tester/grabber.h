@@ -3,6 +3,16 @@
 
 #include <QDialog>
 #include <QDebug>
+#include <QGuiApplication>
+#include <QThread>
+#include <QMutex>
+#include <QListWidget>
+#include <QNetworkReply>
+#include <QTextCodec>
+#include <qgumbodocument.h>
+#include <qgumbonode.h>
+
+#define HTTP_MAX_THREADS 3
 
 namespace Ui {
 class Grabber;
@@ -20,9 +30,36 @@ private slots:
     void on_scanButton_clicked();
     void on_addButton_clicked();
     void on_cancelButton_clicked();
+    void updateurl(const QUrl);
 
 private:
     Ui::Grabber *ui;
+    QMutex mutex;
+    QUrl startfrom;
+
 };
 
+
+
+class GThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    GThread(QListWidget *givenmodel, QMutex& givenmutex, const QUrl url, QObject *parent);
+    ~GThread();
+    static int thrcount;
+
+protected:
+    QListWidget *model;
+    QMutex &mutex;
+    QUrl url;
+    void run();
+private slots:
+    void httpRequestFinished(QNetworkReply*);
+    //void httpRequestError(QNetworkReply::NetworkError);
+signals:
+    void status(QString,int);
+
+};
 #endif // GRABBER_H

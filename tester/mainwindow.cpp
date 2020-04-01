@@ -389,6 +389,7 @@ Thread::Thread(QTableWidget *givenmodel, QMutex& givenmutex, int givenid, QObjec
     thrcount++;
     timer.start();
 }
+
 Thread::~Thread()
 {
     thrcount--;
@@ -421,8 +422,21 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
     QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
+    if(encoding.startsWith("text/html"))
+//        encoding=encoding.remove("text/html; charset=");
+        encoding=encoding.section("charset=",-1,-1).toUpper();
+    else
+    {
+        quit();
+        requestInterruption();
+        wait();
+        qDebug()<<"Done, not added "<<reply->url().toString()<<", threads "<<thrcount;
+        delete this;
+    }
+
+
 //    encoding=encoding.remove("text/html; charset=");
-    encoding=encoding.section("charset=",-1,-1).toUpper();
+//    encoding=encoding.section("charset=",-1,-1).toUpper();
 //    qDebug()<<encoding;
 //    qDebug()<<body;
 

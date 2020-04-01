@@ -37,7 +37,6 @@ public:
     ~MainWindow();
     int addItems(QStringList list);
 
-
 private slots:
     void on_actionAbout_triggered();
     void on_actionSave_To_File_triggered();
@@ -65,6 +64,7 @@ private slots:
 
     void on_action_Grab_from_site_triggered();
 };
+
 
 class QWaitCursor
 {
