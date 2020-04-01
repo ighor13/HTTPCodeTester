@@ -35,40 +35,36 @@ void Grabber::on_scanButton_clicked()
 
     mutex.lock();
     ui->listWidget->addItem(ui->lineEdit->text());
-    ui->listWidget->addItem("https://www.vitareklama.ru/sozdanie-saitov/");
-    ui->listWidget->addItem("https://www.vitareklama.ru/");
-    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/01-website-design-komtrans");
-    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/02-website-design-gaz-komtrans");
-    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/");
-    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/04-website-design-uaz-cargo-sgr-landing-page");
-    ui->listWidget->addItem("https://www.vitareklama.ru/prodvizhenie-saitov/");
     mutex.unlock();
-
-
 
     bool finish;
     do
     {
         finish=true;
-        int i=0,c;
         do
         {
-            mutex.lock();
-            c=ui->listWidget->count();
-            ui->progressBar->setMaximum(c);
-            if(!done[ui->listWidget->item(i)->text()])
+            int i=0,c;
+            do
             {
-                done[ui->listWidget->item(i)->text()]=true;
-                ui->progressBar->setValue(i);
-                mutex.unlock();
-                updateurl(ui->listWidget->item(i)->text());
-                finish=false;
-            }
-            else
-                mutex.unlock();
+                mutex.lock();
+                c=ui->listWidget->count();
+                ui->progressBar->setMaximum(c);
+                if(!done[ui->listWidget->item(i)->text()])
+                {
+                    done[ui->listWidget->item(i)->text()]=true;
+                    ui->progressBar->setValue(i);
+                    mutex.unlock();
+                    updateurl(ui->listWidget->item(i)->text());
+                    finish=false;
+                }
+                else
+                    mutex.unlock();
 
-        } while(++i<c);
+            } while(++i<c);
+            qApp->processEvents();
+        } while(GThread::thrcount>0);
     }  while(!finish);
+    qDebug()<<ui->listWidget->count();
 
     mutex.lock();
     ui->progressBar->setValue(ui->listWidget->count());
@@ -126,9 +122,9 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
     QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
 
+    qDebug()<<reply->url()<<" "<<encoding;
     if(encoding.startsWith("text/html"))
     {
-        qDebug()<<encoding;
         encoding=encoding.section("charset=",-1,-1).toUpper();
 //    qDebug()<<reply->url();
 //    qDebug()<<encoding;
