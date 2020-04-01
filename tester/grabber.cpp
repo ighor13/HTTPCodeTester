@@ -35,11 +35,44 @@ void Grabber::on_scanButton_clicked()
 
     mutex.lock();
     ui->listWidget->addItem(ui->lineEdit->text());
+    ui->listWidget->addItem("https://www.vitareklama.ru/sozdanie-saitov/");
+    ui->listWidget->addItem("https://www.vitareklama.ru/");
+    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/01-website-design-komtrans");
+    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/02-website-design-gaz-komtrans");
+    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/");
+    ui->listWidget->addItem("https://www.vitareklama.ru/portfolio/04-website-design-uaz-cargo-sgr-landing-page");
+    ui->listWidget->addItem("https://www.vitareklama.ru/prodvizhenie-saitov/");
     mutex.unlock();
-    updateurl(ui->lineEdit->text());
 
 
-//    ui->progressBar->setValue(ui->tableWidget->rowCount());
+
+    bool finish;
+    do
+    {
+        finish=true;
+        int i=0,c;
+        do
+        {
+            mutex.lock();
+            c=ui->listWidget->count();
+            ui->progressBar->setMaximum(c);
+            if(!done[ui->listWidget->item(i)->text()])
+            {
+                done[ui->listWidget->item(i)->text()]=true;
+                ui->progressBar->setValue(i);
+                mutex.unlock();
+                updateurl(ui->listWidget->item(i)->text());
+                finish=false;
+            }
+            else
+                mutex.unlock();
+
+        } while(++i<c);
+    }  while(!finish);
+
+    mutex.lock();
+    ui->progressBar->setValue(ui->listWidget->count());
+    mutex.unlock();
 
 }
 
@@ -76,8 +109,6 @@ int GThread::thrcount=0;
 
 void GThread::run()
 {
-    mutex.lock();
-    mutex.unlock();
     QNetworkAccessManager manager;
     manager.get(QNetworkRequest(url));
     connect(&manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(httpRequestFinished(QNetworkReply*)));
@@ -94,7 +125,6 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
     int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
     QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
-
 
     if(encoding.startsWith("text/html"))
     {
@@ -133,6 +163,7 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
                     else
                         mutex.unlock();
                 }
+
             }
         }
     }

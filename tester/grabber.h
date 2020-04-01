@@ -9,6 +9,7 @@
 #include <QListWidget>
 #include <QNetworkReply>
 #include <QTextCodec>
+#include <QMap>
 #include <qgumbodocument.h>
 #include <qgumbonode.h>
 
@@ -36,6 +37,7 @@ private:
     Ui::Grabber *ui;
     QMutex mutex;
     QUrl startfrom;
+    QMap<QString,bool> done;
 
 };
 
