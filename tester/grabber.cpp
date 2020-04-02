@@ -63,8 +63,7 @@ void Grabber::on_scanButton_clicked()
             } while(++i<c);
             qApp->processEvents();
         } while(GThread::thrcount>0);
-    }  while(!finish);
-    qDebug()<<ui->listWidget->count();
+    } while(!finish);
 
     mutex.lock();
     ui->progressBar->setValue(ui->listWidget->count());
@@ -116,7 +115,6 @@ void GThread::run()
 
 void GThread::httpRequestFinished(QNetworkReply* reply)
 {
-    QByteArray body = reply->readAll();
     QList<QNetworkReply::RawHeaderPair>  headers = reply->rawHeaderPairs();
     int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
@@ -125,6 +123,7 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
     qDebug()<<reply->url()<<" "<<encoding;
     if(encoding.startsWith("text/html"))
     {
+        QByteArray body = reply->readAll();
         encoding=encoding.section("charset=",-1,-1).toUpper();
 //    qDebug()<<reply->url();
 //    qDebug()<<encoding;
