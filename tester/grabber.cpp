@@ -105,6 +105,8 @@ int GThread::thrcount=0;
 void GThread::run()
 {
     QNetworkAccessManager manager;
+    //if(manager.head(QNetworkRequest(url))->header(QNetworkRequest::ContentTypeHeader).toString().startsWith("text/html"))
+
     manager.get(QNetworkRequest(url));
     connect(&manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(httpRequestFinished(QNetworkReply*)));
 //    connect(&manager,SIGNAL(error(QNetworkReply::NetworkError)),this, SLOT(httpRequestTimeout(QNetworkReply::NetworkError* )));
