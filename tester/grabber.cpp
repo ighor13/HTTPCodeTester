@@ -55,11 +55,12 @@ void Grabber::on_scanButton_clicked()
                     ui->progressBar->setValue(i);
                     mutex.unlock();
                     updateurl(ui->listWidget->item(i)->text());
+                    qApp->processEvents();
                     finish=false;
                 }
                 else
                     mutex.unlock();
-
+                qApp->processEvents();
             } while(++i<c);
             qApp->processEvents();
         } while(GThread::thrcount>0);
@@ -93,6 +94,7 @@ GThread::GThread(QListWidget *givenmodel, QMutex& givenmutex, const QUrl givenur
     : QThread(parent), model(givenmodel), mutex(givenmutex), url(givenurl)
 {
     thrcount++;
+    state=none;
 }
 
 GThread::~GThread()
@@ -105,13 +107,27 @@ int GThread::thrcount=0;
 void GThread::run()
 {
     QNetworkAccessManager manager;
-    //if(manager.head(QNetworkRequest(url))->header(QNetworkRequest::ContentTypeHeader).toString().startsWith("text/html"))
+    QNetworkRequest request=QNetworkRequest(url);
+//    request.setRawHeader("Accept", "text/html,text/plain;q=0.8,none;q=0.5");
 
-    manager.get(QNetworkRequest(url));
+    manager.head(request);
     connect(&manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(httpRequestFinished(QNetworkReply*)));
+    qDebug()<<"Headed "<<url.toString()<<", threads "<<thrcount;
+    while(state==none)
+        qApp->processEvents(); // wait
+    if(state==ready)
+    {
+        manager.get(request);
+        qDebug()<<"Started "<<url.toString()<<", threads "<<thrcount;
+    }
+    else if(state==skip)
+    {
+        ;// code has no effect ?
+    }
+
 //    connect(&manager,SIGNAL(error(QNetworkReply::NetworkError)),this, SLOT(httpRequestTimeout(QNetworkReply::NetworkError* )));
-    qDebug()<<"Started "<<url.toString()<<", threads "<<thrcount;
     this->exec();
+
 }
 
 
@@ -122,9 +138,25 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
     QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
 
-    qDebug()<<reply->url()<<" "<<encoding;
-    if(encoding.startsWith("text/html"))
+    if(reply->operation()==QNetworkAccessManager::HeadOperation)
     {
+        if(encoding.startsWith("text/html"))
+        {
+           this->state=ready;
+        }
+        else
+        {
+           qDebug()<<"Skipped "<<url.toString()<<", threads "<<thrcount;
+           this->state=skip;
+           quit();
+           requestInterruption();
+           wait();
+           delete this;
+        }
+    }
+    else
+    {
+//    qDebug()<<reply->url()<<" "<<encoding;
         QByteArray body = reply->readAll();
         encoding=encoding.section("charset=",-1,-1).toUpper();
 //    qDebug()<<reply->url();
@@ -148,7 +180,6 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
                     url.setScheme(reply->url().scheme());
                 if(url.path()==QString(""))
                     url.setPath("/");
-
                 if(url.host().endsWith(reply->url().host()) || reply->url().host().endsWith(url.host()))
                 {
                     mutex.lock();
@@ -160,14 +191,13 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
                     else
                         mutex.unlock();
                 }
-
             }
         }
+        qDebug()<<"Done "<<url.toString()<<", threads "<<thrcount;
+        quit();
+        requestInterruption();
+        wait();
+        delete this;
     }
-    qDebug()<<"Done "<<reply->url().toString()<<", threads "<<thrcount;
-    quit();
-    requestInterruption();
-    wait();
-    delete this;
 }
 

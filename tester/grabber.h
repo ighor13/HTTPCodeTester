@@ -56,6 +56,7 @@ protected:
     QListWidget *model;
     QMutex &mutex;
     QUrl url;
+    enum States {none, ready, skip} state;
     void run();
 private slots:
     void httpRequestFinished(QNetworkReply*);
