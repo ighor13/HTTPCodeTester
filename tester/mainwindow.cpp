@@ -368,7 +368,6 @@ void MainWindow::gotXML(QNetworkReply* reply)
 
 }
 
-
 void MainWindow::on_actionClea_r_All_triggered()
 {
     mutex.lock();
@@ -413,7 +412,6 @@ void Thread::run()
     this->exec();
 }
 
-
 void Thread::httpRequestFinished(QNetworkReply* reply)
 {
     QUrl url(model->item(id,0)->text());
@@ -423,15 +421,15 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
     QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
     if(encoding.startsWith("text/html"))
-//        encoding=encoding.remove("text/html; charset=");
         encoding=encoding.section("charset=",-1,-1).toUpper();
     else
     {
+        qDebug()<<"Done, body skipped "<<reply->url().toString()<<", threads "<<thrcount;
         quit();
         requestInterruption();
         wait();
-        qDebug()<<"Done, not added "<<reply->url().toString()<<", threads "<<thrcount;
         delete this;
+        return;
     }
 
 

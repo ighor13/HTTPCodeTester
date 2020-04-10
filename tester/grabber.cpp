@@ -27,6 +27,7 @@ void Grabber::on_scanButton_clicked()
     mutex.lock();
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(1);
+    ui->listWidget->setSelectionMode(QAbstractItemView::MultiSelection);
     mutex.unlock();
 
     startfrom=ui->lineEdit->text();
@@ -74,6 +75,10 @@ void Grabber::on_scanButton_clicked()
 
 void Grabber::on_addButton_clicked()
 {
+    for(const auto& item: ui->listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard))
+           result.push_back(item->text());
+
+ /*
     int c = ui->listWidget->count();
     for (int i = 0; i < c ; ++i)
     {
@@ -82,6 +87,15 @@ void Grabber::on_addButton_clicked()
         QString q= model_index->data(Qt::DisplayRole).toString();
         result.push_back(q);
     }
+*/
+    this->close();
+}
+
+void Grabber::on_addSelectdButton_clicked()
+{
+    for(const auto& item: ui->listWidget->selectedItems())
+        result.push_back(item->text());
+
     this->close();
 }
 
@@ -142,6 +156,13 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
     {
         if(encoding.startsWith("text/html"))
         {
+           // select in list
+           mutex.lock();
+           auto items=model->findItems(url.toString(),Qt::MatchExactly);
+           if(!items.empty())
+           for (const auto& item: items)
+                item->setSelected(true);
+           mutex.unlock();
            this->state=ready;
         }
         else
@@ -200,4 +221,3 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
         delete this;
     }
 }
-

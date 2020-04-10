@@ -32,6 +32,7 @@ private slots:
     void on_addButton_clicked();
     void on_cancelButton_clicked();
     void updateurl(const QUrl);
+    void on_addSelectdButton_clicked();
 
 private:
     Ui::Grabber *ui;
