@@ -23,7 +23,6 @@ void Grabber::updateurl(const QUrl url)
 
 void Grabber::on_scanButton_clicked()
 {
-
     mutex.lock();
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(1);
@@ -70,7 +69,6 @@ void Grabber::on_scanButton_clicked()
     mutex.lock();
     ui->progressBar->setValue(ui->listWidget->count());
     mutex.unlock();
-
 }
 
 void Grabber::on_addButton_clicked()
@@ -78,7 +76,7 @@ void Grabber::on_addButton_clicked()
     for(const auto& item: ui->listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard))
            result.push_back(item->text());
 
- /*
+ /* // variant
     int c = ui->listWidget->count();
     for (int i = 0; i < c ; ++i)
     {

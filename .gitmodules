@@ -1,3 +1,6 @@
 [submodule "libs/QGumboParser"]
 	path = libs/QGumboParser
 	url = https://github.com/lagner/QGumboParser.git
+[submodule "libs/android_openssl"]
+	path = libs/android_openssl
+	url = https://github.com/KDAB/android_openssl

@@ -30,6 +30,7 @@ FORMS += \
 
 
 # Default rules for deployment.
+android: include(..\libs\android_openssl\openssl.pri )
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
