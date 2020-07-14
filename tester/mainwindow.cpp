@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.41a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.42a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 

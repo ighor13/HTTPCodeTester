@@ -188,10 +188,23 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
             QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
             auto doc = QGumboDocument::parse(codec->toUnicode(body));
             auto root = doc.rootNode();
+            // <base href="https://awakom.ru/">
+            auto bases = root.getElementsByTagName(HtmlTag::BASE);
+            QString basehref="";
+            for (const auto& base: bases)
+            {
+                qDebug() << "BASE: " << base.getAttribute("href");
+                basehref=QString(base.getAttribute("href").simplified());
+            }
+
             auto nodes = root.getElementsByTagName(HtmlTag::A);
             for (const auto& node: nodes)
             {
                 QUrl url=node.getAttribute("href").simplified();
+                if (!(url.toString().indexOf("http://")==0||url.toString().indexOf("https://")==0||url.toString().indexOf("mailto:")==0||url.toString().indexOf("tel:")==0))
+                    if(!(url.toString().indexOf("/")==0))
+                        url=basehref+node.getAttribute("href").simplified();
+
                 url=url.toString(QUrl::RemoveFragment);
                 if(url.host()==QString(""))
                     url.setHost(reply->url().host());
