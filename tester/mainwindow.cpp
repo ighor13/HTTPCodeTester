@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.42a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.43a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 
@@ -498,12 +498,25 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         {
 //        qDebug() << "title: " << node.innerText();
             item = new QTableWidgetItem(QString(node.innerText().simplified()));
+            item->setForeground(QBrush(QColor(0, 0, 0)));
+
+            bool exists=false;
+            for(const auto& found:model->findItems(QString(node.innerText().simplified()), Qt::MatchExactly))
+                if(found->column()==6)
+                    {
+                        found->setForeground(QBrush(QColor(0, 0, 255)));
+                        exists=true;
+                    }
+            if(exists)
+                item->setForeground(QBrush(QColor(0, 0, 255)));
+
             model->setItem(id, 6, item);
             titlecount++;
         }
         if(titlecount>1)
         {
             item = new QTableWidgetItem(QString("MORE THAN ONE!"));
+            item->setForeground(QBrush(QColor(255, 0, 0)));
             model->setItem(id, 6, item);
         }
 
@@ -517,13 +530,39 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
             {
 //                qDebug()<<"Complex h1";
                 for (const auto& child: node.childNodes())
+                {
                     item = new QTableWidgetItem(QString(child.innerText().simplified()));
+                    item->setForeground(QBrush(QColor(0, 0, 0)));
+
+                    bool exists=false;
+                    for(const auto& found:model->findItems(QString(node.innerText().simplified()), Qt::MatchExactly))
+                        if(found->column()==7)
+                            {
+                                found->setForeground(QBrush(QColor(0, 0, 255)));
+                                exists=true;
+                            }
+                    if(exists)
+                        item->setForeground(QBrush(QColor(0, 0, 255)));
+
                     model->setItem(id, 7, item);
                     h1count++;
+                }
             }
             else
             {
                 item = new QTableWidgetItem(QString(node.innerText().simplified()));
+                item->setForeground(QBrush(QColor(0, 0, 0)));
+
+                bool exists=false;
+                for(const auto& found:model->findItems(QString(node.innerText().simplified()), Qt::MatchExactly))
+                    if(found->column()==7)
+                        {
+                            found->setForeground(QBrush(QColor(0, 0, 255)));
+                            exists=true;
+                        }
+                if(exists)
+                    item->setForeground(QBrush(QColor(0, 0, 255)));
+
                 model->setItem(id, 7, item);
                 h1count++;
             }
@@ -531,6 +570,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         if(h1count>1)
         {
             item = new QTableWidgetItem(QString("MORE THAN ONE!"));
+            item->setForeground(QBrush(QColor(255, 0, 0)));
             model->setItem(id, 7, item);
         }
 
@@ -541,6 +581,18 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
             if(node.getAttribute("name").toLower()==QString("description"))
             {
                 item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
+                item->setForeground(QBrush(QColor(0, 0, 0)));
+
+                bool exists=false;
+                for(const auto& found:model->findItems( QString(node.getAttribute("content")).simplified(), Qt::MatchExactly))
+                    if(found->column()==8)
+                        {
+                            found->setForeground(QBrush(QColor(0, 0, 255)));
+                            exists=true;
+                        }
+                if(exists)
+                    item->setForeground(QBrush(QColor(0, 0, 255)));
+
                 model->setItem(id, 8, item);
             }
             if(node.getAttribute("name").toLower()==QString("keywords"))
