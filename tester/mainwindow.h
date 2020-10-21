@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QClipboard>
+#include <QMimeData>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QTextCodec>

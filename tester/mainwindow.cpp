@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.43a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.44a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 
@@ -106,24 +106,43 @@ void MainWindow::on_actionSave_To_File_triggered()
 void MainWindow::on_actionCopy_To_Clipboard_triggered()
 {
     mutex.lock();
-    QString text;
+    QString text,html;
 
     text+="URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\n";
+    html+="<html><style>br{mso-data-placement:same-cell;}</style><table>";
 
     for(int i=0;i<ui->tableWidget->rowCount();i++)
     {
+         html+="<tr>";
          if(ui->tableWidget->item(i,0))
+         {
                text+=ui->tableWidget->item(i,0)->text();
+               html+="<td  style=\"color: #"+ui->tableWidget->item(i,0)->foreground().color().name()+"\">"+ui->tableWidget->item(i,0)->text()+"</td>";
+         }
+
          for(int j=1;j<=ui->tableWidget->columnCount();j++)
                if(ui->tableWidget->item(i,j))
+               {
                            text+=QString("\t")+ui->tableWidget->item(i,j)->text();
+                           html+="<td  style=\"color: "+ui->tableWidget->item(i,j)->foreground().color().name()+"\">"+ui->tableWidget->item(i,j)->text()+"</td>";
+               }
                else
+               {
                     text+=QString("\t");
+                    html+="<td></td>";
+               }
 
+         html+="</tr>";
          text+="\n";
     }
+    html+="</table>";
+
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(text);
+    QMimeData * md = new QMimeData;
+    md->setHtml(html);
+    md->setText(text);
+    //    clipboard->setText(text);
+    clipboard->setMimeData(md);
     ui->statusbar->showMessage("Saved to clipboard",3000);
     mutex.unlock();
 }
