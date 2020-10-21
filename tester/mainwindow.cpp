@@ -117,14 +117,14 @@ void MainWindow::on_actionCopy_To_Clipboard_triggered()
          if(ui->tableWidget->item(i,0))
          {
                text+=ui->tableWidget->item(i,0)->text();
-               html+="<td  style=\"color: #"+ui->tableWidget->item(i,0)->foreground().color().name()+"\">"+ui->tableWidget->item(i,0)->text()+"</td>";
+               html+="<td  style=\"color: #"+ui->tableWidget->item(i,0)->foreground().color().name()+"\">"+ui->tableWidget->item(i,0)->text().toHtmlEscaped()+"</td>";
          }
 
          for(int j=1;j<=ui->tableWidget->columnCount();j++)
                if(ui->tableWidget->item(i,j))
                {
                            text+=QString("\t")+ui->tableWidget->item(i,j)->text();
-                           html+="<td  style=\"color: "+ui->tableWidget->item(i,j)->foreground().color().name()+"\">"+ui->tableWidget->item(i,j)->text()+"</td>";
+                           html+="<td  style=\"color: "+ui->tableWidget->item(i,j)->foreground().color().name()+"\">"+ui->tableWidget->item(i,j)->text().toHtmlEscaped()+"</td>";
                }
                else
                {
