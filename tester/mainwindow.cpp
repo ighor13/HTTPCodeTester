@@ -109,7 +109,8 @@ void MainWindow::on_actionCopy_To_Clipboard_triggered()
     QString text,html;
 
     text+="URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\n";
-    html+="<html><style>br{mso-data-placement:same-cell;}</style><table>";
+    html+="<html><style>br{mso-data-placement:same-cell;}</style>\
+           <table><tr><td><b>URL</b></td><td><b>Resp. Time, ms.</b></td><td><b>Size</b></td><td><b>Encoding</b></td><td><b>HTTP Code</b></td><td><b>Redirect Target</b></td><td><b>&lt;title&gt;</b></td><td><b>&lt;h1&gt;</b></td><td><b>meta description</b></td><td><b>meta keywords</b></td></tr>";
 
     for(int i=0;i<ui->tableWidget->rowCount();i++)
     {
@@ -124,7 +125,12 @@ void MainWindow::on_actionCopy_To_Clipboard_triggered()
                if(ui->tableWidget->item(i,j))
                {
                            text+=QString("\t")+ui->tableWidget->item(i,j)->text();
-                           html+="<td style=\"color:"+ui->tableWidget->item(i,j)->foreground().color().name()+";\">"+ui->tableWidget->item(i,j)->text().toHtmlEscaped()+"</td>";
+                           QString bstart, bend;
+                           if(ui->tableWidget->item(i,j)->foreground().color().name()!="#000000")
+                           {
+                               bstart="<b>"; bend="</b>";
+                           }
+                           html+="<td style=\"color:"+ui->tableWidget->item(i,j)->foreground().color().name()+";\">"+bstart+ui->tableWidget->item(i,j)->text().toHtmlEscaped()+bend+"</td>";
                }
                else
                {
