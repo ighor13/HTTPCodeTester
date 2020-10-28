@@ -444,6 +444,34 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     QList<QNetworkReply::RawHeaderPair>  headers = reply->rawHeaderPairs();
     int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QByteArray httpStatusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();
+    mutex.lock();
+    QTableWidgetItem *item;
+    if(timer.elapsed())
+    {
+       item = new QTableWidgetItem(QString::number(timer.elapsed()));
+       model->setItem(id, 1, item);
+    }
+    if(body.size())
+    {
+        item = new QTableWidgetItem(QString::number(body.size()));
+        model->setItem(id, 2, item);
+    }
+    if(httpStatus)
+    {
+        item = new QTableWidgetItem(QString::number(httpStatus));
+        model->setItem(id, 4, item);
+    }
+    else
+    {
+        item = new QTableWidgetItem(QString("ERROR"));
+        model->setItem(id, 4, item);
+    }
+    if(httpStatus>=300&&httpStatus<310)
+    {
+       item = new QTableWidgetItem(QString(reply->rawHeader("Location")));
+       model->setItem(id, 5, item);
+    }
+    mutex.unlock();
     QString encoding=reply->header(QNetworkRequest::ContentTypeHeader).toString();
     if(encoding.startsWith("text/html"))
         encoding=encoding.section("charset=",-1,-1).toUpper();
@@ -457,7 +485,6 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         return;
     }
 
-
 //    encoding=encoding.remove("text/html; charset=");
 //    encoding=encoding.section("charset=",-1,-1).toUpper();
 //    qDebug()<<encoding;
@@ -465,41 +492,11 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
 
 //        emit status("url: "+index0.data().toString(),idforstatus);
     mutex.lock();
-    QTableWidgetItem *item;
-    if(timer.elapsed())
-    {
-       item = new QTableWidgetItem(QString::number(timer.elapsed()));
-       model->setItem(id, 1, item);
-    }
-    if(body.size())
-    {
-        item = new QTableWidgetItem(QString::number(body.size()));
-        model->setItem(id, 2, item);
-
-    }
     if(encoding!="")
     {
         item = new QTableWidgetItem(QString(encoding));
         model->setItem(id, 3, item);
-
     }
-    if(httpStatus)
-    {
-        item = new QTableWidgetItem(QString::number(httpStatus));
-        model->setItem(id, 4, item);
-    }
-    else
-    {
-        item = new QTableWidgetItem(QString("ERROR"));
-        model->setItem(id, 4, item);
-    }
-
-    if(httpStatus>=300&&httpStatus<310)
-    {
-       item = new QTableWidgetItem(QString(reply->rawHeader("Location")));
-       model->setItem(id, 5, item);
-    }
-
     if(httpStatus==200)
     {
         QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
