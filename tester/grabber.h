@@ -10,6 +10,10 @@
 #include <QNetworkReply>
 #include <QTextCodec>
 #include <QMap>
+#ifdef Q_OS_WIN
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
+#endif
 #include <qgumbodocument.h>
 #include <qgumbonode.h>
 

@@ -61,7 +61,6 @@ void MainWindow::on_pauseButton_clicked()
 {
     pause=!pause;
     ui->statusbar->showMessage("Paused",3000);
-
 }
 
 void MainWindow::on_stopButton_clicked()
@@ -699,9 +698,22 @@ void MainWindow::on_startButton_clicked()
         ui->statusbar->showMessage(ui->tableWidget->item(i,0)->text(),3000);
         mutex.unlock();
         if(stop)
+        {
+#ifdef Q_OS_WIN
+            if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+                progress->stop();
+#endif
             return;
+        }
         while(pause)
+        {
+#ifdef Q_OS_WIN
+            if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+                progress->pause();
+#endif
             qApp->processEvents();
+        }
+        progress->resume();
         updateurl(i);
     }
     mutex.lock();
