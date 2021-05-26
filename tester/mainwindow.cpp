@@ -672,16 +672,18 @@ void MainWindow::on_startButton_clicked()
         mutex.unlock();
         return;
     }
+#ifdef Q_OS_WIN
     QWinTaskbarButton *button = new QWinTaskbarButton(this);
     button->setWindow(this->windowHandle());
     QWinTaskbarProgress *progress;
-//    if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
-//    {
+    if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+    {
         progress = button->progress();
         progress->setVisible(true);
         progress->setMinimum(0);
         progress->setMaximum(ui->tableWidget->rowCount());
-//    }
+    }
+#endif
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(ui->tableWidget->rowCount());
     //!!!!!!!!!!!!!!!!!!!!!!!!
@@ -691,7 +693,9 @@ void MainWindow::on_startButton_clicked()
     {
         mutex.lock();
         ui->progressBar->setValue(i);
+#ifdef Q_OS_WIN
         progress->setValue(i);
+#endif
         ui->statusbar->showMessage(ui->tableWidget->item(i,0)->text(),3000);
         mutex.unlock();
         if(stop)
@@ -702,7 +706,9 @@ void MainWindow::on_startButton_clicked()
     }
     mutex.lock();
     ui->progressBar->setValue(ui->tableWidget->rowCount());
+#ifdef Q_OS_WIN
     progress->setValue(ui->tableWidget->rowCount());
+#endif
     ui->statusbar->showMessage("All requests sent...",5000);
     delete button;
     mutex.unlock();
