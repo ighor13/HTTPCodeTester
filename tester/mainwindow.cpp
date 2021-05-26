@@ -686,7 +686,7 @@ void MainWindow::on_startButton_clicked()
 #endif
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(ui->tableWidget->rowCount());
-    //!!!!!!!!!!!!!!!!!!!!!!!!
+
     mutex.unlock();
 
     for(int i=0;i<ui->tableWidget->rowCount();i++)
@@ -706,11 +706,11 @@ void MainWindow::on_startButton_clicked()
     }
     mutex.lock();
     ui->progressBar->setValue(ui->tableWidget->rowCount());
+    ui->statusbar->showMessage("All requests sent...",5000);
 #ifdef Q_OS_WIN
     progress->setValue(ui->tableWidget->rowCount());
-#endif
-    ui->statusbar->showMessage("All requests sent...",5000);
     delete button;
+#endif
     mutex.unlock();
 
 }
