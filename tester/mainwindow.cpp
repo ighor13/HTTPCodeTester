@@ -713,7 +713,9 @@ void MainWindow::on_startButton_clicked()
 #endif
             qApp->processEvents();
         }
+#ifdef Q_OS_WIN
         progress->resume();
+#endif
         updateurl(i);
     }
     mutex.lock();
