@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setHorizontalHeaderItem(8, new QTableWidgetItem("meta description"));
     ui->tableWidget->setHorizontalHeaderItem(9, new QTableWidgetItem("meta keywords"));
     ui->tableWidget->setHorizontalHeaderItem(10, new QTableWidgetItem("rel canonical"));
-
 }
 
 MainWindow::~MainWindow()
@@ -50,7 +49,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.45a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.46a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 
@@ -673,14 +672,26 @@ void MainWindow::on_startButton_clicked()
         mutex.unlock();
         return;
     }
+    QWinTaskbarButton *button = new QWinTaskbarButton(this);
+    button->setWindow(this->windowHandle());
+    QWinTaskbarProgress *progress;
+//    if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+//    {
+        progress = button->progress();
+        progress->setVisible(true);
+        progress->setMinimum(0);
+        progress->setMaximum(ui->tableWidget->rowCount());
+//    }
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(ui->tableWidget->rowCount());
+    //!!!!!!!!!!!!!!!!!!!!!!!!
     mutex.unlock();
 
     for(int i=0;i<ui->tableWidget->rowCount();i++)
     {
         mutex.lock();
         ui->progressBar->setValue(i);
+        progress->setValue(i);
         ui->statusbar->showMessage(ui->tableWidget->item(i,0)->text(),3000);
         mutex.unlock();
         if(stop)
@@ -691,7 +702,9 @@ void MainWindow::on_startButton_clicked()
     }
     mutex.lock();
     ui->progressBar->setValue(ui->tableWidget->rowCount());
+    progress->setValue(ui->tableWidget->rowCount());
     ui->statusbar->showMessage("All requests sent...",5000);
+    delete button;
     mutex.unlock();
 
 }

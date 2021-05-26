@@ -16,6 +16,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QDomDocument>
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
 #include <fstream>
 #include <sstream>
 #include <qgumbodocument.h>
