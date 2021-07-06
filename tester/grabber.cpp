@@ -63,14 +63,16 @@ void Grabber::on_scanButton_clicked()
                 c=ui->listWidget->count();
                 ui->progressBar->setMaximum(c);
 #ifdef Q_OS_WIN
-                progress->setMaximum(c);
+                if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+                    progress->setMaximum(c);
 #endif
                 if(!done[ui->listWidget->item(i)->text()])
                 {
                     done[ui->listWidget->item(i)->text()]=true;
                     ui->progressBar->setValue(i);
 #ifdef Q_OS_WIN
-                    progress->setValue(i);
+                    if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+                           progress->setValue(i);
 #endif
                     mutex.unlock();
                     updateurl(ui->listWidget->item(i)->text());
@@ -88,7 +90,8 @@ void Grabber::on_scanButton_clicked()
     mutex.lock();
     ui->progressBar->setValue(ui->listWidget->count());
 #ifdef Q_OS_WIN
-    progress->setValue(ui->listWidget->count());
+    if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
+        progress->setValue(ui->listWidget->count());
     delete button;
 #endif
     mutex.unlock();
@@ -236,6 +239,7 @@ void GThread::httpRequestFinished(QNetworkReply* reply)
                 if(url.path()==QString(""))
                     url.setPath("/");
                 if(url.host().endsWith(reply->url().host()) || reply->url().host().endsWith(url.host()))
+//                if(url.host()==reply->url().host() || reply->url().host()==url.host())
                 {
                     mutex.lock();
                     if(model->findItems(url.toString(),Qt::MatchExactly).empty())
