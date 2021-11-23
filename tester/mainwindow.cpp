@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->insertColumn(8);
     ui->tableWidget->insertColumn(9);
     ui->tableWidget->insertColumn(10);
+    ui->tableWidget->insertColumn(11);
     ui->tableWidget->setColumnWidth(0, 500);
     ui->tableWidget->setColumnWidth(1, 150);
     ui->tableWidget->setColumnWidth(2, 150);
@@ -29,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setColumnWidth(8, 500);
     ui->tableWidget->setColumnWidth(9, 500);
     ui->tableWidget->setColumnWidth(10, 500);
+    ui->tableWidget->setColumnWidth(11, 250);
     ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("URL"));
     ui->tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Resp. Time, ms."));
     ui->tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Size"));
@@ -40,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setHorizontalHeaderItem(8, new QTableWidgetItem("meta description"));
     ui->tableWidget->setHorizontalHeaderItem(9, new QTableWidgetItem("meta keywords"));
     ui->tableWidget->setHorizontalHeaderItem(10, new QTableWidgetItem("rel canonical"));
+    ui->tableWidget->setHorizontalHeaderItem(11, new QTableWidgetItem("meta robots"));
+
 }
 
 MainWindow::~MainWindow()
@@ -49,7 +53,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.46a\nCopyright (c) 2020 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.47a\nCopyright (c) 2020-21 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 
@@ -85,7 +89,7 @@ void MainWindow::on_actionSave_To_File_triggered()
         else
         {
             QTextStream out(&file);
-            out<<"URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\tcanonical\n";
+            out<<"URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\tcanonical\nrobots\n";
             for(int i=0;i<ui->tableWidget->rowCount();i++)
             {
                 if(ui->tableWidget->item(i,0)) // QTableWidgetItem
@@ -109,9 +113,9 @@ void MainWindow::on_actionCopy_To_Clipboard_triggered()
     mutex.lock();
     QString text,html;
 
-    text+="URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\tcanonical\n";
+    text+="URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\tcanonical\nrobots\n";
     html+="<html><style>br{mso-data-placement:same-cell;}</style>\
-           <table><tr><td><b>URL</b></td><td><b>Resp. Time, ms.</b></td><td><b>Size</b></td><td><b>Encoding</b></td><td><b>HTTP Code</b></td><td><b>Redirect Target</b></td><td><b>&lt;title&gt;</b></td><td><b>&lt;h1&gt;</b></td><td><b>meta description</b></td><td><b>meta keywords</b></td><td><b>canonical</b></td></tr>";
+           <table><tr><td><b>URL</b></td><td><b>Resp. Time, ms.</b></td><td><b>Size</b></td><td><b>Encoding</b></td><td><b>HTTP Code</b></td><td><b>Redirect Target</b></td><td><b>&lt;title&gt;</b></td><td><b>&lt;h1&gt;</b></td><td><b>meta description</b></td><td><b>meta keywords</b></td><td><b>canonical</b></td><td><b>robots</b></td></tr>";
 
     for(int i=0;i<ui->tableWidget->rowCount();i++)
     {
@@ -500,6 +504,17 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     }
     if(httpStatus==200)
     {
+//        try
+//        {
+//            QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
+//            QGumboDocument::parse(codec->toUnicode(body));
+//        }
+//        catch (std::runtime_error& e)
+//        {
+//            qDebug() << "html parsing fault";
+//        }
+//        return;
+
         QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
         auto doc = QGumboDocument::parse(codec->toUnicode(body));
         auto root = doc.rootNode();
@@ -543,7 +558,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
             model->setItem(id, 6, item);
         }
 
-        unsigned h1count=0;
+        unsigned h1count=0, robotscount=0;
         nodes = root.getElementsByTagName(HtmlTag::H1);
 
         for (const auto& node: nodes)
@@ -623,6 +638,22 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
                 item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
                 model->setItem(id, 9, item);
             }
+            if(node.getAttribute("name").toLower()==QString("robots"))
+            {
+                if(robotscount++>0)
+                {
+                    item = new QTableWidgetItem(QString("MORE THAN ONE!"));
+                    item->setForeground(QBrush(QColor(255, 0, 0)));
+                    model->setItem(id, 11, item);
+                }
+                else
+                {
+                    item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
+                    model->setItem(id, 11, item);
+
+                }
+            }
+
         }
         nodes = root.getElementsByTagName(HtmlTag::LINK);
         for (const auto& node: nodes)
