@@ -670,7 +670,6 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
                 {
                     item = new QTableWidgetItem(QString(node.getAttribute("href")).simplified());
                     model->setItem(id, 10, item);
-                    //
                 }
 
             }
