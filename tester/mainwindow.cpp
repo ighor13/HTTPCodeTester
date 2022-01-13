@@ -558,7 +558,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
             model->setItem(id, 6, item);
         }
 
-        unsigned h1count=0, robotscount=0;
+        unsigned h1count=0, robotscount=0, canonicalcount=0;
         nodes = root.getElementsByTagName(HtmlTag::H1);
 
         for (const auto& node: nodes)
@@ -660,8 +660,18 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
         {
             if(node.getAttribute("rel").toLower()==QString("canonical"))
             {
-                item = new QTableWidgetItem(QString(node.getAttribute("href")).simplified());
-                model->setItem(id, 10, item);
+                if(canonicalcount++>0)
+                {
+                    item = new QTableWidgetItem(QString("MORE THAN ONE!"));
+                    item->setForeground(QBrush(QColor(255, 0, 0)));
+                    model->setItem(id, 10, item);
+                }
+                else
+                {
+                    item = new QTableWidgetItem(QString(node.getAttribute("href")).simplified());
+                    model->setItem(id, 10, item);
+                }
+
             }
 
         }
