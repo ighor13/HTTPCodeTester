@@ -19,15 +19,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     grabber.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    search.cpp
 
 HEADERS += \
     grabber.h \
-    mainwindow.h
+    mainwindow.h \
+    search.h
 
 FORMS += \
     grabber.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    search.ui
 
 android: include(..\libs\android_openssl\openssl.pri)
 

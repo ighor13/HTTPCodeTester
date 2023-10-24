@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->insertColumn(9);
     ui->tableWidget->insertColumn(10);
     ui->tableWidget->insertColumn(11);
+    ui->tableWidget->insertColumn(12);
     ui->tableWidget->setColumnWidth(0, 500);
     ui->tableWidget->setColumnWidth(1, 150);
     ui->tableWidget->setColumnWidth(2, 150);
@@ -31,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setColumnWidth(9, 500);
     ui->tableWidget->setColumnWidth(10, 500);
     ui->tableWidget->setColumnWidth(11, 250);
+    ui->tableWidget->setColumnWidth(11, 150);
     ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("URL"));
     ui->tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Resp. Time, ms."));
     ui->tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Size"));
@@ -43,7 +45,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setHorizontalHeaderItem(9, new QTableWidgetItem("meta keywords"));
     ui->tableWidget->setHorizontalHeaderItem(10, new QTableWidgetItem("rel canonical"));
     ui->tableWidget->setHorizontalHeaderItem(11, new QTableWidgetItem("meta robots"));
+    ui->tableWidget->setHorizontalHeaderItem(11, new QTableWidgetItem("commerce"));
 
+    search.data.push_back("еклам");
+    search.data.push_back("понсор");
 }
 
 MainWindow::~MainWindow()
@@ -89,7 +94,7 @@ void MainWindow::on_actionSave_To_File_triggered()
         else
         {
             QTextStream out(&file);
-            out<<"URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\tcanonical\nrobots\n";
+            out<<"URL\tResp. Time, ms.\tSize\tEncoding\tHTTP Code\tRedirect Target\t<title>\t<h1>\tmeta description\tmeta keywords\tcanonical\nrobots\ncommerce\n";
             for(int i=0;i<ui->tableWidget->rowCount();i++)
             {
                 if(ui->tableWidget->item(i,0)) // QTableWidgetItem
@@ -704,6 +709,8 @@ void MainWindow::updateurl(const int i)
 
 void MainWindow::on_startButton_clicked()
 {
+//    search.
+    //............
     stop=pause=false;
     mutex.lock();
     if(ui->tableWidget->rowCount()==0)
@@ -796,3 +803,12 @@ void MainWindow::on_action_Grab_from_site_triggered()
     grabber.exec();
     addItems(grabber.result);
 }
+
+void MainWindow::on_action_Search_triggered()
+{
+
+    search.setModal(true);
+    search.exec();
+
+}
+

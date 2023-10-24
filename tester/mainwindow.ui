@@ -104,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>932</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPush_me_too">
@@ -137,6 +137,8 @@
     <addaction name="actionStart"/>
     <addaction name="actionPause"/>
     <addaction name="actionStop"/>
+    <addaction name="separator"/>
+    <addaction name="action_Search"/>
    </widget>
    <addaction name="menuPush_me_too"/>
    <addaction name="menuAction"/>
@@ -259,6 +261,14 @@
     <string>Ctrl+B</string>
    </property>
   </action>
+  <action name="action_Search">
+   <property name="text">
+    <string>&amp;Search</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="test.qrc"/>
@@ -275,8 +285,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>520</x>
-     <y>386</y>
+     <x>707</x>
+     <y>425</y>
     </hint>
    </hints>
   </connection>
@@ -291,8 +301,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>606</x>
-     <y>386</y>
+     <x>807</x>
+     <y>425</y>
     </hint>
    </hints>
   </connection>
@@ -307,8 +317,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>692</x>
-     <y>386</y>
+     <x>907</x>
+     <y>425</y>
     </hint>
    </hints>
   </connection>

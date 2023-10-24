@@ -47,7 +47,6 @@ private:
 };
 
 
-
 class GThread : public QThread
 {
     Q_OBJECT

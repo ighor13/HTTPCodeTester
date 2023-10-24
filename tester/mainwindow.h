@@ -25,6 +25,7 @@
 #include <qgumbodocument.h>
 #include <qgumbonode.h>
 #include <grabber.h>
+#include <search.h>
 
 #define HTTP_MAX_THREADS 3
 
@@ -41,6 +42,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     int addItems(QStringList list);
+    Search search;
 
 private slots:
     void on_actionAbout_triggered();
@@ -68,6 +70,7 @@ private slots:
     void gotXML(QNetworkReply* );
 
     void on_action_Grab_from_site_triggered();
+    void on_action_Search_triggered();
 };
 
 

@@ -38,7 +38,6 @@ void Grabber::on_scanButton_clicked()
         progress->setMaximum(1);
     }
 #endif
-
     ui->listWidget->setSelectionMode(QAbstractItemView::MultiSelection);
     mutex.unlock();
 
