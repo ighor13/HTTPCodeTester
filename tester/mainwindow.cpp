@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setColumnWidth(9, 500);
     ui->tableWidget->setColumnWidth(10, 500);
     ui->tableWidget->setColumnWidth(11, 250);
-    ui->tableWidget->setColumnWidth(11, 150);
+    ui->tableWidget->setColumnWidth(12, 150);
     ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("URL"));
     ui->tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Resp. Time, ms."));
     ui->tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Size"));
@@ -45,10 +45,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setHorizontalHeaderItem(9, new QTableWidgetItem("meta keywords"));
     ui->tableWidget->setHorizontalHeaderItem(10, new QTableWidgetItem("rel canonical"));
     ui->tableWidget->setHorizontalHeaderItem(11, new QTableWidgetItem("meta robots"));
-    ui->tableWidget->setHorizontalHeaderItem(11, new QTableWidgetItem("commerce"));
+    ui->tableWidget->setHorizontalHeaderItem(12, new QTableWidgetItem("commerce"));
 
     search.data.push_back("еклам");
     search.data.push_back("понсор");
+//    search.data.push_back("едвиж");
 }
 
 MainWindow::~MainWindow()
@@ -417,11 +418,12 @@ void MainWindow::on_actionE_xit_triggered()
     close();
 }
 
-Thread::Thread(QTableWidget *givenmodel, QMutex& givenmutex, int givenid, QObject *parent)
+Thread::Thread(QTableWidget *givenmodel, QMutex& givenmutex, QStringList& givensearch, int givenid, QObject *parent)
     : QThread(parent), model(givenmodel), mutex(givenmutex), id(givenid)
 {
     thrcount++;
     timer.start();
+    search=givensearch;
 }
 
 Thread::~Thread()
@@ -655,7 +657,6 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
                 {
                     item = new QTableWidgetItem(QString(node.getAttribute("content")).simplified());
                     model->setItem(id, 11, item);
-
                 }
             }
 
@@ -676,11 +677,26 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
                     item = new QTableWidgetItem(QString(node.getAttribute("href")).simplified());
                     model->setItem(id, 10, item);
                 }
-
             }
-
         }
 
+        QString found="No";
+        try
+        {
+            for( auto q : search)
+            {
+//            qDebug()<<q;
+//            qDebug()<<FindText(&root,q);
+                  if(FindText(&root,q)==true)
+                      found="Yes";
+            }
+            item = new QTableWidgetItem(QString(found));
+            model->setItem(id, 12, item);
+         }
+         catch (...)
+         {
+            qCritical() << "smth wrong";
+         }
     }
     mutex.unlock();
 
@@ -690,6 +706,25 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     qDebug()<<"Done "<<id<<" "<<url<<", threads "<<thrcount;
     delete this;
 }
+bool Thread::FindText(const QGumboNode* givennode, QString& what)
+{
+    auto children = givennode->children();
+    if(givennode->innerText().indexOf(what)>0)
+       return true;
+
+    bool found=false;
+    for (const auto& node: children)
+    {
+//         qDebug() << "Tag: " << node.tagName();
+//         qDebug() << "InnerText: " << node.innerText();
+         if(node.tagName()!="head"&&node.tagName()!="script")
+             if(FindText(&node,what)==true)
+                 found=true;
+   }
+
+
+    return found;
+}
 
 //void Thread::httpRequestError(QNetworkReply::NetworkError result)
 //{
@@ -697,7 +732,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
 
 void MainWindow::updateurl(const int i)
 {
-    Thread* httpthread=new Thread(ui->tableWidget,mutex,i,this);
+    Thread* httpthread=new Thread(ui->tableWidget,mutex,search.data,i,this);
 
 //    connect(httpthread,SIGNAL(status(QString,int)),this,SLOT(status(QString,int)));
 
@@ -709,8 +744,6 @@ void MainWindow::updateurl(const int i)
 
 void MainWindow::on_startButton_clicked()
 {
-//    search.
-    //............
     stop=pause=false;
     mutex.lock();
     if(ui->tableWidget->rowCount()==0)
@@ -809,6 +842,5 @@ void MainWindow::on_action_Search_triggered()
 
     search.setModal(true);
     search.exec();
-
 }
 

@@ -42,7 +42,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     int addItems(QStringList list);
-    Search search;
 
 private slots:
     void on_actionAbout_triggered();
@@ -62,6 +61,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QMutex mutex;
+    Search search;
     bool stop;
     bool pause;
     QNetworkAccessManager xmlmanager;
@@ -87,15 +87,17 @@ class Thread : public QThread
     Q_OBJECT
 
 public:
-    Thread(QTableWidget *givenmodel, QMutex& givenmutex, int givenid, QObject *parent);
+    Thread(QTableWidget *givenmodel, QMutex& givenmutex, QStringList& givensearch, int givenid, QObject *parent);
     ~Thread();
     static int thrcount;
-
+private:
+    bool FindText(const QGumboNode*, QString&);
 protected:
     QTableWidget *model;
     QMutex &mutex;
     int id;
     QTime timer;
+    QStringList search;
     void run();
 private slots:
     void httpRequestFinished(QNetworkReply*);
