@@ -511,19 +511,20 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
     }
     if(httpStatus==200)
     {
-//        try
-//        {
-//            QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
-//            QGumboDocument::parse(codec->toUnicode(body));
-//        }
-//        catch (std::runtime_error& e)
-//        {
-//            qDebug() << "html parsing fault";
-//        }
-//        return;
+/*
+        try
+        {
+        }
+  //      catch (std::runtime_error& e)
+        catch (...)
+        {
+            qDebug() << "html parsing fault";
+        }
+*/
 
         QTextCodec *codec = QTextCodec::codecForName(encoding.toLocal8Bit());
         auto doc = QGumboDocument::parse(codec->toUnicode(body));
+
         auto root = doc.rootNode();
 /*
         auto nodes = root.getElementsByTagName(HtmlTag::TITLE);
@@ -697,6 +698,7 @@ void Thread::httpRequestFinished(QNetworkReply* reply)
          {
             qCritical() << "smth wrong";
          }
+// catch here ?
     }
     mutex.unlock();
 

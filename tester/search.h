@@ -25,7 +25,7 @@ private:
     Ui::Search *ui;
 
 protected:
-    void Search::showEvent(QShowEvent *);
+    void showEvent(QShowEvent *);
 
 };
 #endif // SEARCH_H
