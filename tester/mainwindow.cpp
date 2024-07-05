@@ -69,8 +69,8 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_pauseButton_clicked()
 {
-    pause=!pause;
-    ui->statusbar->showMessage("Paused",3000);
+    if(pause=!pause)
+        ui->statusbar->showMessage("Paused",3000);
 }
 
 void MainWindow::on_stopButton_clicked()
