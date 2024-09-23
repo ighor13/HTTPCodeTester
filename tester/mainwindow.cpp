@@ -59,7 +59,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QString content="HTTP Code Tester v0.50a\nCopyright (c) 2020-23 by Ighor Poteryakhin\nighor@ighor.ru\n";
+    QString content="HTTP Code Tester v0.60a\nCopyright (c) 2020-24 by Ighor Poteryakhin\nighor@ighor.ru\n";
     content+=QString("Compiled with QT ")+QT_VERSION_STR+QString(", rinning on ")+QSysInfo::productType()+" "+QSysInfo::productVersion()+"/"+QSysInfo::currentCpuArchitecture();
 //    content+=QSysInfo::prettyProductName()+"/";
 
@@ -105,7 +105,7 @@ void MainWindow::on_actionSave_To_File_triggered()
                         out<<"\t"<<ui->tableWidget->item(i,j)->text();
                     else
                         out<<QString("\t");
-                out<<endl;
+                out<<Qt::endl;
             }
         }
     }
@@ -168,7 +168,11 @@ void MainWindow::on_actionLoad_From_Clipboard_triggered()
 {
    mutex.lock();
    QClipboard *clipboard = QApplication::clipboard();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
    QRegExp rx("\n");
+#else
+   QRegularExpression rx("\n");
+#endif
    unsigned long count=0;
 
    QStringList query = clipboard->text().split(rx);
@@ -755,6 +759,7 @@ void MainWindow::on_startButton_clicked()
         return;
     }
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QWinTaskbarButton *button = new QWinTaskbarButton(this);
     button->setWindow(this->windowHandle());
     QWinTaskbarProgress *progress;
@@ -766,6 +771,7 @@ void MainWindow::on_startButton_clicked()
         progress->setMaximum(ui->tableWidget->rowCount());
     }
 #endif
+#endif
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(ui->tableWidget->rowCount());
 
@@ -776,28 +782,36 @@ void MainWindow::on_startButton_clicked()
         mutex.lock();
         ui->progressBar->setValue(i);
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         progress->setValue(i);
+#endif
 #endif
         ui->statusbar->showMessage(ui->tableWidget->item(i,0)->text(),3000);
         mutex.unlock();
         if(stop)
         {
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
                 progress->stop();
+#endif
 #endif
             return;
         }
         while(pause)
         {
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
                 progress->pause();
+#endif
 #endif
             qApp->processEvents();
         }
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         progress->resume();
+#endif
 #endif
         updateurl(i);
     }
@@ -805,8 +819,10 @@ void MainWindow::on_startButton_clicked()
     ui->progressBar->setValue(ui->tableWidget->rowCount());
     ui->statusbar->showMessage("All requests sent...",5000);
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     progress->setValue(ui->tableWidget->rowCount());
     delete button;
+#endif
 #endif
     mutex.unlock();
 

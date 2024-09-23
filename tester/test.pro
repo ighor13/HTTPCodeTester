@@ -1,7 +1,8 @@
-QT       += core gui network xml
+QT       += core gui network xml core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-win32:QT += winextras
+#win32:QT += winextras
+# https://forum.qt.io/topic/150075/how-to-re-use-window-icons/2
 
 CONFIG += c++11
 

@@ -8,11 +8,17 @@
 #include <QMutex>
 #include <QListWidget>
 #include <QNetworkReply>
-#include <QTextCodec>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QtCore/QTextCodec>
+#else
+#include <QtCore5Compat/QTextCodec>
+#endif
 #include <QMap>
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
+#endif
 #endif
 #include <qgumbodocument.h>
 #include <qgumbonode.h>

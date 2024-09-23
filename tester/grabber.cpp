@@ -27,6 +27,7 @@ void Grabber::on_scanButton_clicked()
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(1);
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QWinTaskbarButton *button = new QWinTaskbarButton(this);
     button->setWindow(this->windowHandle());
     QWinTaskbarProgress *progress;
@@ -37,6 +38,7 @@ void Grabber::on_scanButton_clicked()
         progress->setMinimum(0);
         progress->setMaximum(1);
     }
+#endif
 #endif
     ui->listWidget->setSelectionMode(QAbstractItemView::MultiSelection);
     mutex.unlock();
@@ -62,16 +64,20 @@ void Grabber::on_scanButton_clicked()
                 c=ui->listWidget->count();
                 ui->progressBar->setMaximum(c);
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
                     progress->setMaximum(c);
+#endif
 #endif
                 if(!done[ui->listWidget->item(i)->text()])
                 {
                     done[ui->listWidget->item(i)->text()]=true;
                     ui->progressBar->setValue(i);
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
                            progress->setValue(i);
+#endif
 #endif
                     mutex.unlock();
                     updateurl(ui->listWidget->item(i)->text());
@@ -89,9 +95,11 @@ void Grabber::on_scanButton_clicked()
     mutex.lock();
     ui->progressBar->setValue(ui->listWidget->count());
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if(QSysInfo::productType()=="windows"&&QSysInfo::productVersion()>=7)
         progress->setValue(ui->listWidget->count());
     delete button;
+#endif
 #endif
     mutex.unlock();
 }

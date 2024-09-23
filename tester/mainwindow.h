@@ -7,7 +7,12 @@
 #include <QMimeData>
 #include <QFileDialog>
 #include <QInputDialog>
-#include <QTextCodec>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QtCore/QTextCodec>
+#else
+#include <QtCore5Compat/QTextCodec>
+#include <QRegExp>
+#endif
 #include <QThread>
 #include <QMutex>
 #include <QDebug>
@@ -17,8 +22,10 @@
 #include <QNetworkReply>
 #include <QDomDocument>
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
+#endif
 #endif
 #include <fstream>
 #include <sstream>
@@ -96,7 +103,7 @@ protected:
     QTableWidget *model;
     QMutex &mutex;
     int id;
-    QTime timer;
+    QElapsedTimer timer;
     QStringList search;
     void run();
 private slots:
