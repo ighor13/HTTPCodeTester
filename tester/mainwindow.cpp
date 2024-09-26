@@ -445,8 +445,18 @@ void Thread::run()
 
     mutex.unlock();
 
-    QNetworkAccessManager manager;
+QNetworkAccessManager manager;
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     manager.get(QNetworkRequest(url));
+
+#else
+    QNetworkRequest req(url);
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+
+    manager.get(QNetworkRequest(req));
+#endif
+
     connect(&manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(httpRequestFinished(QNetworkReply*)));
 //    connect(&manager,SIGNAL(error(QNetworkReply::NetworkError)),this, SLOT(httpRequestTimeout(QNetworkReply::NetworkError* )));
     qDebug()<<"Started "<<id<<" "<<url<<", threads "<<thrcount;
